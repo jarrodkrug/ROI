@@ -6,12 +6,12 @@
 <title>DroneDeploy ROI Calculator</title>
 <style>
   :root{
-    --brand:#2D6BFF;
-    --text:#0f172a;
-    --muted:#6b7280;
-    --bg:#f8fafc;
-    --card:#ffffff;
-    --border:#e5e7eb;
+    --brand:#2D6BFF; /* DroneDeploy primary */
+    --text:#0f172a;  /* slate-900 */
+    --muted:#6b7280; /* gray-500 */
+    --bg:#f8fafc;   /* slate-50 */
+    --card:#ffffff; /* white */
+    --border:#e5e7eb; /* gray-200 */
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:#111827}
@@ -49,21 +49,36 @@
   .kpi .sub{font-size:12px;color:#6b7280;margin-top:2px}
   .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#111827;border-radius:14px;padding:8px 12px;font-size:14px;cursor:pointer}
   .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .toolbar{display:flex;gap:8px;align-items:center}.actionsbar{justify-content:flex-end;gap:8px;margin-bottom:12px;flex-wrap:wrap}
   footer{margin-top:18px;font-size:11px;color:#6b7280}
   .breakdown{list-style:none;margin:0;padding:0}
   .breakdown li{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px dashed #edf2f7}
   .breakdown li strong{font-size:22px;line-height:1.15}
+  @media(min-width:640px){.breakdown li strong{font-size:24px}}
+  @media(min-width:1024px){.breakdown li strong{font-size:28px}}
   .breakdown li span{flex:1 1 auto}
+  .two-col{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+  .logo-pair{display:flex;align-items:center;gap:10px}
+  .monogram{height:36px;width:36px;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;background:#fff;color:#6b7280;font-weight:700;font-size:12px}
+  .chk{display:flex;align-items:center;gap:8px;font-size:13px}
+  .chk input{margin:0}
+  @media print{.btn,.toolbar,.pills{display:none!important} .card{break-inside:avoid} body{background:#fff}}
 </style>
 </head>
 <body>
   <div class="container">
     <header>
       <div class="brand">
-        <div class="logo"><img id="ddLogo" alt="DroneDeploy" src="https://logo.clearbit.com/dronedeploy.com" /></div>
-        <div><h1>DroneDeploy ROI Calculator</h1><div class="muted">Estimate annual impact and payback based on your operations.</div></div>
+        <div class="logo">
+          <img id="ddLogo" alt="DroneDeploy" src="https://drive.google.com/file/d/1qgmZAEXqqB-gq0foFWn1x84O7gK52YcX/view?usp=sharing" />
+        </div>
+        <div>
+          <h1>DroneDeploy ROI Calculator</h1>
+          <div class="muted">Estimate annual impact and payback based on your operations.</div>
+        </div>
       </div>
-    </header>
+      </header>
 
     <div class="grid">
       <div class="left column">
@@ -76,26 +91,159 @@
           <div class="actions">
             <div class="action-grid">
               <button class="btn" id="copyLinkBtn" title="Copy a link with your current inputs">Copy share link</button>
-              <button class="btn" id="openPrintViewBtn">Open print view</button>
-              <button class="btn" id="downloadPrintBtn">Download HTML</button>
-              <button class="btn primary" id="printBtn">Print / Save PDF</button>
+              <button class="btn" id="openPrintViewBtn" type="button" title="Open a clean printable view in a new tab">Open print view</button>
+              <button class="btn" id="downloadPrintBtn" type="button" title="Download printable HTML">Download HTML</button>
+              <button class="btn primary" id="printBtn" type="button">Print / Save PDF</button>
             </div>
-            <button class="btn primary" id="applyPresetBtn">Apply DroneDeploy preset</button>
+            <button class="btn primary" id="applyPresetBtn" title="Reset all fields to DroneDeploy defaults">Apply DroneDeploy preset</button>
           </div>
         </div>
-        <!-- (everything else unchanged — your inputs/cards go here unchanged) -->
+        <!-- QUALITY & SAFETY -->
+        <div class="card">
+          <div class="section-title"><h3>Quality & Safety</h3></div>
+          <div class="row">
+            <div><label>Avg. rework cost per project</label><input type="number" step="100" data-key="avgReworkCostPerProject" /></div>
+            <div><label>Rework rate (before) %</label><input type="number" step="1" min="0" max="100" data-key="reworkRateBaselinePct" /></div>
+            <div><label>Rework rate (with DroneDeploy) %</label><input type="number" step="1" min="0" max="100" data-key="reworkRateWithDDPct" /></div>
+            <div><label>Annual safety incidents (before)</label><input type="number" step="1" min="0" data-key="safetyIncidentsBaseline" /></div>
+            <div><label>Annual safety incidents (with DroneDeploy)</label><input type="number" step="1" min="0" data-key="safetyIncidentsWithDD" /></div>
+            <div><label>Cost per safety incident</label><input type="number" step="100" data-key="costPerSafetyIncident" /></div>
+            <div><label>Cost of Safety & QA/QC inspections (per year)</label><input type="number" step="1000" data-key="estimated_cost_of_safety_and_qa_qc_inspections_per_year" /></div>
+          </div>
+        </div>
+
+        <!-- ROI DRIVERS -->
+        <div class="card">
+          <div class="section-title"><h3>ROI drivers</h3></div>
+          <div class="row">
+            <div><label>Estimated travel costs (per year)</label><input type="number" step="500" data-key="estimated_total_travel_costs_per_year" /></div>
+            <div><label>Destructive investigation costs (per year)</label><input type="number" step="500" data-key="estimated_total_destructive_investigation_expenses_per_year" /></div>
+            <div><label>Organizing & sharing images (per year)</label><input type="number" step="500" data-key="estimated_cost_of_organizing_and_sharing_images_per_year" /></div>
+            <div><label>Insurance costs (per year)</label><input type="number" step="1000" data-key="estimated_total_insurance_costs_per_year" /></div>
+            <div><label>Avg. construction cost (per project)</label><input type="number" step="50000" data-key="average_construction_cost" /></div>
+            <div><label>Projects submitted for bid (per year)</label><input type="number" step="1" min="0" data-key="number_of_projects_you_submit_for_bid" /></div>
+            <div><label>Projects per year</label><input type="number" step="1" min="0" data-key="number_of_projects_per_year" /></div>
+            <div>
+              <label>Revenue per day (program)</label>
+              <input type="number" step="1000" data-key="revenue_per_day" />
+              <div class="hint">Default ≈ (avg project cost × projects) ÷ 365</div>
+            </div>
+            <div><label>Working hours per day</label><input type="number" step="1" min="1" data-key="working_hours_per_day" /></div>
+          </div>
+        </div>
+
+        <!-- Assumptions -->
+        <div class="card">
+          <div class="section-title"><h3>Assumptions</h3></div>
+          <div class="row">
+            <div><label>Travel reduction with DroneDeploy %</label><input type="number" step="1" min="0" max="100" data-key="travel_reduction_pct_ui" /></div>
+            <div><label>Fewer destructive investigations %</label><input type="number" step="1" min="0" max="100" data-key="investigations_reduction_pct_ui" /></div>
+            <div><label>Documentation admin efficiency %</label><input type="number" step="0.1" min="0" max="100" data-key="doc_efficiency_improvement_pct_ui" /></div>
+            <div><label>Insurance premium reduction %</label><input type="number" step="1" min="0" max="100" data-key="insurance_premium_reduction_pct_ui" /></div>
+            <div><label>Schedule acceleration factor %</label><input type="number" step="1" min="0" max="100" data-key="schedule_acceleration_pct_ui" /></div>
+            <div><label>Bid win-rate uplift %</label><input type="number" step="1" min="0" max="100" data-key="win_rate_uplift_pct_ui" /></div>
+          </div>
+        </div>
+
+        <!-- ANNUAL COSTS -->
+        <div class="card">
+          <div class="section-title"><h3>Annual Costs — Hardware and Software</h3></div>
+          <div class="row">
+            <div><label>Software subscription</label><input type="number" step="500" data-key="softwareAnnualCost" /></div>
+            <div><label>Hardware</label><input type="number" step="500" data-key="hardwareAnnualCost" /></div>
+            <div><label>Other costs</label><input type="number" step="500" data-key="otherAnnualCosts" /></div>
+          </div>
+        </div>
+
+        <!-- BRANDING / SIGNATURE -->
+        <div class="card">
+          <div class="section-title"><h3>Branding & Signature</h3></div>
+          <div class="two-col">
+            <div>
+              <label>Primary color (hex)</label>
+              <input type="text" data-key="brand_primary_hex" />
+            </div>
+            <div>
+              <label>Headline text color (hex)</label>
+              <input type="text" data-key="brand_text_hex" />
+            </div>
+            <div>
+              <label>Prepared for (customer name)</label>
+              <input type="text" data-key="prepared_for" />
+            </div>
+            <div>
+              <label>Customer logo (file)</label>
+              <input type="file" id="customerLogoFile" accept="image/*" />
+              <div class="hint">Optional: shows alongside DroneDeploy on the banner</div>
+              <div class="logo-pair" style="margin-top:8px">
+                <div class="logo"><img id="customerLogo" alt="Customer" /></div>
+                <div class="monogram" id="customerMono">NA</div>
+              </div>
+            </div>
+            <div>
+              <label>Prepared by</label>
+              <input type="text" data-key="prepared_by" />
+              <div class="hint" id="preparedByLine"></div>
+            </div>
+            <div>
+              <label>Title</label>
+              <input type="text" data-key="prepared_by_title" />
+            </div>
+            <div>
+              <label>Company</label>
+              <input type="text" data-key="prepared_by_company" />
+            </div>
+            <div>
+              <label>Email</label>
+              <input type="text" data-key="prepared_by_email" />
+            </div>
+            <div>
+              <label>Phone</label>
+              <input type="text" data-key="prepared_by_phone" />
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <label>Legal footer / NDA line</label>
+            <input type="text" data-key="legal_footer" />
+          </div>
+        </div>
       </div>
 
       <div class="right column">
-        <div class="card"><div class="section-title"><h3>Summary</h3></div><div class="kpis">
-            <div class="kpi"><div class="label">ROI</div><div class="value" id="kpiRoi">—</div></div>
+        <div class="card">
+          <div class="section-title"><h3>Summary</h3></div>
+          <div class="kpis">
+            <div class="kpi"><div class="label">ROI</div><div class="value" id="kpiRoi">—</div><div class="sub">ROI shown as whole percent, capped at 99%</div></div>
             <div class="kpi"><div class="label">Net annual impact</div><div class="value" id="kpiNet">—</div></div>
-            <div class="kpi"><div class="label">Payback period</div><div class="value" id="kpiPayback">—</div></div>
-        </div></div>
-        <div class="card"><div class="section-title"><h3>Breakdown</h3></div><ul class="breakdown" id="breakdown"></ul></div>
+            <div class="kpi"><div class="label">Payback period</div><div class="value" id="kpiPayback">—</div><div class="sub">months</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title"><h3>Breakdown</h3></div>
+          <ul class="breakdown" id="breakdown"></ul>
+        </div>
 
-        <div class="card"><div class="section-title"><h3>Share</h3></div>
-          <input type="text" readonly id="shareUrl" />
+        <!-- Print options -->
+        <div class="card">
+          <div class="section-title"><h3>Print options</h3></div>
+          <div class="row" style="grid-template-columns:1fr">
+            <label class="chk"><input type="checkbox" id="togglePrepared" checked> Include “Prepared by”</label>
+            <label class="chk"><input type="checkbox" id="toggleSummary" checked> Include “Summary”</label>
+            <label class="chk"><input type="checkbox" id="toggleBreakdown" checked> Include “Breakdown”</label>
+            <label class="chk"><input type="checkbox" id="toggleFooter" checked> Include legal footer</label>
+          </div>
+          <div class="hint">Applies to Print / Open print view / Download HTML.</div>
+        </div>
+
+        <div class="card">
+          <div class="section-title"><h3>Share</h3></div>
+          <div class="two-col">
+            <div style="grid-column:1/-1">
+              <label>Sharable link</label>
+              <input type="text" readonly id="shareUrl" />
+              <div class="hint">Click "Copy share link" above. If blocked, select the field and press Ctrl/Cmd+C.</div>
+            </div>
+          </div>
         </div>
         <footer id="footerText" class="card"></footer>
       </div>
@@ -104,9 +252,21 @@
 
 <script>
 (function(){
-  const $ = s=>document.querySelector(s);
-  const currency = n=> new Intl.NumberFormat(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}).format(isFinite(n)?n:0);
+  // ---- Formatting helpers ----
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const currency = (n)=> new Intl.NumberFormat(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}).format(isFinite(n)?n:0);
+  const number = (n)=> new Intl.NumberFormat(undefined,{maximumFractionDigits:0}).format(isFinite(n)?n:0);
+  const pct0 = (n)=> isFinite(n)? (Math.round((n||0)*100)+'%') : '—';
+  const pct0Capped = (n)=>{ if(!isFinite(n)) return '—'; const r=Math.round((n||0)*100); return (r>99?99:r)+'%'; };
+  const toFraction = (p)=> Math.max(0, Number(p||0))/100; // 0-100 -> 0-1
+  const monogram2 = (name)=>{ if(!name) return 'NA'; const chars=(name.match(/[A-Za-z0-9]/g)||[]).join(''); if(chars.length===0) return 'NA'; if(chars.length===1) return (chars+chars).slice(0,2).toUpperCase(); return chars.slice(0,2).toUpperCase(); };
+  const PCT_MAP = { 
+  reworkRateBaselinePct: 'reworkRateBaseline',
+  reworkRateWithDDPct: 'reworkRateWithDD'
+  };
 
+  // ---- Defaults ----
   const DEFAULTS = {
     flightsPerWeek:5,weeksPerYear:48,teamMembers:2,manualHoursPerFlight:3,droneHoursPerFlight:1,hourlyRate:75,travelHoursSavedPerFlight:1,
     avgReworkCostPerProject:1200,reworkRateBaseline:0.12,reworkRateWithDD:0.05,
@@ -118,6 +278,8 @@
     estimated_cost_of_safety_and_qa_qc_inspections_per_year:504000,
     estimated_total_insurance_costs_per_year:1350000,
     working_hours_per_day:8,revenue_per_day:123288,
+    increase_in_annual_revenue_by_starting_the_next_job_sooner:15000000,
+    increase_in_annual_revenue_by_winning_more_projects:45000000,
     travel_reduction_pct:0.5,investigations_reduction_pct:0.5,doc_efficiency_improvement_pct:0.0062,insurance_premium_reduction_pct:0.1,
     schedule_acceleration_pct:0.3333,win_rate_uplift_pct:0.5,
     brand_primary_hex:'#2D6BFF',brand_text_hex:'#0f172a',
@@ -126,55 +288,372 @@
     legal_footer:'Confidential — Provided by DroneDeploy under NDA. Do not distribute without written consent.'
   };
 
-  const state = {...DEFAULTS};
+  const state = { ...DEFAULTS };
 
-  // Parse URL params
+  // ---- Query string -> state ----
   const params = new URLSearchParams(location.search);
-  Object.keys(DEFAULTS).forEach(k=>{ if(params.has(k)) state[k] = typeof DEFAULTS[k]==='number' ? Number(params.get(k)) : params.get(k); });
-
-  function getShareUrl(){
-    const p = new URLSearchParams();
-    Object.keys(DEFAULTS).forEach(k=>{ p.set(k,String(state[k])); });
-
-    // Build a base that WORKS even locally
-    let base;
-    if(location.protocol.startsWith('file:')){
-      const full = location.href.split('?')[0];
-      base = full;
-    } else {
-      base = location.origin + location.pathname;
-    }
-    return base + '?' + p.toString();
-  }
-
-  $('#copyLinkBtn').addEventListener('click', async ()=>{
-    const text = getShareUrl();
-    try {
-      if(navigator.clipboard && window.isSecureContext){
-        await navigator.clipboard.writeText(text);
-        alert('Share link copied!');
-      } else {
-        $('#shareUrl').value = text;
-        $('#shareUrl').select();
-        document.execCommand('copy');
-        alert('Share link copied!');
-      }
-    } catch(e) {
-      $('#shareUrl').value = text;
-      $('#shareUrl').select();
+  Object.keys(DEFAULTS).forEach((k)=>{
+    if(params.has(k)){
+      const v = params.get(k);
+      state[k] = (typeof DEFAULTS[k]==='number') ? Number(v) : v;
     }
   });
 
-  function updateShare(){
-    $('#shareUrl').value = getShareUrl();
+  // ---- Wire inputs ----
+  function initInputs(){
+    // numeric/ text
+    $$('[data-key]').forEach(el=>{
+      const k = el.getAttribute('data-key');
+      if (PCT_MAP[k]) {
+  const base = PCT_MAP[k];
+  el.value = Math.round((state[base]||0) * 100);
+  el.addEventListener('input', () => { state[base] = toFraction(el.value); update(); });
+} else if (k.endsWith('_ui')) {
+
+        // UI-only percent fields
+        const base = k.replace('_ui','');
+        el.value = Math.round((state[base]||0)*100);
+        el.addEventListener('input', ()=>{ state[base] = toFraction(el.value); update();});
+      } else if (k === 'brand_primary_hex' || k === 'brand_text_hex' || k.startsWith('prepared_') || k==='legal_footer'){
+        el.value = state[k] || '';
+        el.addEventListener('input', ()=>{ state[k]=el.value; applyBrand(); updateFooter(); updateShare(); updateMonogram();});
+      } else {
+        el.value = state[k];
+        el.addEventListener('input', ()=>{ state[k]=Number(el.value||0); update(); updateShare();});
+      }
+    });
+
+    // Customer logo file input -> show preview as data URL
+    const file = document.getElementById('customerLogoFile');
+    const img = document.getElementById('customerLogo');
+    file.addEventListener('change', (e)=>{
+      const f = e.target.files && e.target.files[0];
+      if(!f) return; if(!f.type.startsWith('image/')) return;
+      const fr = new FileReader();
+      fr.onload = ()=>{ img.src = String(fr.result); $('#customerMono').style.display='none'; };
+      fr.readAsDataURL(f);
+    });
   }
 
-  // Placeholder update() — you can plug your original compute logic back here
-  function update(){
+  // Keep inputs in sync with current state (no new listeners)
+  function syncInputsFromState(){
+    $$('[data-key]').forEach(el=>{
+      const k = el.getAttribute('data-key');
+      if (PCT_MAP[k]) {
+  const base = PCT_MAP[k];
+  el.value = Math.round((state[base]||0) * 100);
+} else if (k.endsWith('_ui')) {
+
+        const base = k.replace('_ui','');
+        el.value = Math.round((state[base]||0)*100);
+      } else if (k === 'brand_primary_hex' || k === 'brand_text_hex' || k.startsWith('prepared_') || k==='legal_footer'){
+        el.value = state[k] || '';
+      } else {
+        el.value = state[k];
+      }
+    });
+    applyBrand();
+    updateFooter();
+    updateMonogram();
     updateShare();
   }
 
-  update();
+  // ---- Calculations ----
+  function compute(){
+    // Simple "ops" time savings kept for schedule days calc
+    const flightsPerYear = state.flightsPerWeek * state.weeksPerYear;
+    const timeSavedPerFlight = Math.max(0, state.manualHoursPerFlight - state.droneHoursPerFlight) * Math.max(1, state.teamMembers);
+    const hoursSavedAnnual = flightsPerYear * timeSavedPerFlight;
+
+    // Spreadsheet baselines
+    const baseTravel = Math.max(0, state.estimated_total_travel_costs_per_year||0);
+    const baseInvestigations = Math.max(0, state.estimated_total_destructive_investigation_expenses_per_year||0);
+    const baseDoc = Math.max(0, (state.estimated_cost_of_organizing_and_sharing_images_per_year||0) + (state.estimated_cost_of_safety_and_qa_qc_inspections_per_year||0));
+    const baseInsurance = Math.max(0, state.estimated_total_insurance_costs_per_year||0);
+
+    // Assumptions (fractions)
+    const travelSavings2 = baseTravel * Math.max(0, state.travel_reduction_pct||0);
+    const diSavings = baseInvestigations * Math.max(0, state.investigations_reduction_pct||0);
+    const docSavings = baseDoc * Math.max(0, state.doc_efficiency_improvement_pct||0);
+    const insuranceSavings2 = baseInsurance * Math.max(0, state.insurance_premium_reduction_pct||0);
+
+    // Schedule → revenue
+    const workingHoursPerDay = Math.max(1, state.working_hours_per_day||8);
+    const revenuePerDay = Math.max(0, state.revenue_per_day || ((state.average_construction_cost||0) * Math.max(0, state.number_of_projects_per_year||0) / 365));
+    const scheduleDaysSaved = (hoursSavedAnnual / workingHoursPerDay) * Math.max(0, state.schedule_acceleration_pct||0);
+    const scheduleRevenueGain = revenuePerDay * scheduleDaysSaved;
+
+    // Win more projects
+    const winMoreRevenueGain = Math.max(0, (state.average_construction_cost||0) * Math.max(0, state.number_of_projects_you_submit_for_bid||0) * Math.max(0, state.win_rate_uplift_pct||0));
+
+    // Rework & Safety (quality)
+    const deltaReworkRate = Math.max(0, state.reworkRateBaseline - state.reworkRateWithDD);
+    const reworkSavings = flightsPerYear * deltaReworkRate * Math.max(0, state.avgReworkCostPerProject);
+    const safetyDelta = Math.max(0, state.safetyIncidentsBaseline - state.safetyIncidentsWithDD);
+    const safetySavings = safetyDelta * Math.max(0, state.costPerSafetyIncident);
+
+    const efficiencyGains2 = travelSavings2 + diSavings + docSavings + insuranceSavings2;
+    const increasedRevenues2 = scheduleRevenueGain + winMoreRevenueGain;
+    const totalSavings = reworkSavings + safetySavings + efficiencyGains2 + increasedRevenues2;
+    const totalCosts = Math.max(0,state.softwareAnnualCost)+Math.max(0,state.hardwareAnnualCost)+Math.max(0,state.otherAnnualCosts);
+    const netAnnual = totalSavings - totalCosts;
+    const roiPct = totalCosts>0 ? netAnnual/totalCosts : Infinity;
+    const paybackMonths = totalSavings>0 ? (totalCosts/totalSavings)*12 : Infinity;
+
+    return { flightsPerYear,hoursSavedAnnual,workingHoursPerDay,revenuePerDay,scheduleDaysSaved,
+      scheduleRevenueGain,winMoreRevenueGain,reworkSavings,safetySavings,efficiencyGains2,increasedRevenues2,
+      totalSavings,totalCosts,netAnnual,roiPct,paybackMonths,
+      baseTravel,baseInvestigations,baseDoc,baseInsurance,
+      travelSavings2,diSavings,docSavings,insuranceSavings2 };
+  }
+
+  // ---- UI update ----
+  function update(){
+    const calcs = compute();
+    $('#kpiRoi').textContent = pct0Capped(calcs.roiPct);
+    $('#kpiNet').textContent = currency(calcs.netAnnual);
+    $('#kpiPayback').textContent = isFinite(calcs.paybackMonths)? (Math.round(calcs.paybackMonths*10)/10) : '—';
+
+    const items = [
+      ['Ops: Rework reduction', calcs.reworkSavings],
+      ['Ops: Safety risk reduction', calcs.safetySavings],
+      ['Travel reduction (from spreadsheet)', calcs.travelSavings2],
+      ['Destructive investigations avoided', calcs.diSavings],
+      ['Documentation efficiency', calcs.docSavings],
+      ['Insurance premium reduction', calcs.insuranceSavings2],
+      ['Schedule acceleration (days→revenue)', calcs.scheduleRevenueGain],
+      ['Win-rate uplift (revenue)', calcs.winMoreRevenueGain]
+    ];
+    const ul = $('#breakdown');
+    ul.innerHTML = '';
+    items.forEach(([label,val])=>{
+      const li = document.createElement('li');
+      const a = document.createElement('span'); a.textContent = label;
+      const b = document.createElement('strong'); b.textContent = currency(val);
+      li.appendChild(a); li.appendChild(b); ul.appendChild(li);
+    });
+
+    updateShare();
+  }
+
+$('#copyLinkBtn').addEventListener('click', async () => {
+  const text = getShareUrl();
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      alert('Share link copied to clipboard!');
+    } else {
+      $('#shareUrl').value = text;
+      $('#shareUrl').select();
+      document.execCommand('copy');
+      alert('Share link copied!');
+    }
+  } catch (err) {
+    console.error('Failed to copy to clipboard:', err);
+    $('#shareUrl').value = text;
+    $('#shareUrl').select();
+  }
+});
+
+  // ---- Brand + footer ----
+  function applyBrand(){
+    document.documentElement.style.setProperty('--brand', state.brand_primary_hex || '#2D6BFF');
+    document.documentElement.style.setProperty('--text', state.brand_text_hex || '#0f172a');
+  }
+  function updateFooter(){
+    $('#footerText').textContent = state.legal_footer || '';
+    const by = [state.prepared_by, state.prepared_by_title, state.prepared_by_company].filter(Boolean).join(' • ');
+    $('#preparedByLine').textContent = by;
+  }
+  function updateMonogram(){
+    const mono = monogram2(state.prepared_for||'');
+    $('#customerMono').textContent = mono;
+  }
+
+  // ---- Buttons ----
+  (function printing(){
+  const btn = $('#printBtn');
+  const openBtn = $('#openPrintViewBtn');
+  if(!btn && !openBtn) return;
+
+  function buildPrintableHTML(autoPrint){
+    // Build a minimal, clean document that ONLY includes Summary and Breakdown
+    const getCardByTitle = (title) => {
+      const cards = Array.from(document.querySelectorAll('.card'));
+      const t = title.trim().toLowerCase();
+      return cards.find(c => ((c.querySelector('.section-title h3')?.textContent || '').trim().toLowerCase() === t)) || null;
+    };
+
+    const summary = getCardByTitle('Summary');
+    const breakdown = getCardByTitle('Breakdown');
+
+    // Read toggles (default true if not present)
+    const includePrepared = document.getElementById('togglePrepared') ? document.getElementById('togglePrepared').checked : true;
+    const includeSummary = document.getElementById('toggleSummary') ? document.getElementById('toggleSummary').checked : true;
+    const includeBreakdown = document.getElementById('toggleBreakdown') ? document.getElementById('toggleBreakdown').checked : true;
+    const includeFooter = document.getElementById('toggleFooter') ? document.getElementById('toggleFooter').checked : true;
+
+    // Fallback: if we can't find them for any reason, use the original approach
+    if (!summary || !breakdown) {
+      const root = document.querySelector('.container').cloneNode(true);
+      const tool = root.querySelector('.toolbar'); if (tool) tool.remove();
+      const pills = root.querySelector('.pills'); if (pills) pills.remove();
+      root.querySelectorAll('input').forEach((el)=>{
+        if (el.type === 'file') { el.remove(); return; }
+        const span = document.createElement('span');
+        const val = (el.type === 'number' || el.type === 'text') ? (el.value || el.getAttribute('value') || '') : '';
+        span.textContent = val;
+        span.style.display='inline-block';
+        span.style.padding='10px 12px';
+        span.style.border='1px solid #e5e7eb';
+        span.style.borderRadius='12px';
+        span.style.minWidth='80px';
+        el.replaceWith(span);
+      });
+      const css = `${document.querySelector('style')?.innerHTML || ''}
+@media print {.btn,.toolbar,.pills{display:none!important}}`;
+      const auto = autoPrint ? "<script>window.onload=function(){try{window.focus();setTimeout(function(){window.print()},50)}catch(e){}}<\/script>" : "";
+      return `<!doctype html><html><head><meta charset="utf-8"><title>DroneDeploy ROI — Print</title><style>${css}</style><style>@page{size:letter;margin:12mm} .container{max-width:980px;padding:12px} .card{padding:12px;margin-bottom:8px} .section-title h3{font-size:14px} .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px} .kpi .value{font-size:20px} .kpi .sub{font-size:11px} .breakdown{font-size:13px} .breakdown li{padding:4px 0;border-bottom:1px dashed #edf2f7} .breakdown li:last-child{border-bottom:0} .breakdown li strong{font-size:20px;line-height:1.1} .print-header{margin-bottom:8px} .print-legal{margin-top:10px}</style></head><body>${root.outerHTML}${auto}</body></html>`;
+    }
+
+    // Construct a new lightweight container with just the two sections
+    const wrapper = document.createElement('div');
+    wrapper.className = 'container';
+
+    // Small branded header
+    const header = document.createElement('div');
+    header.className = 'print-header';
+    const ddSrc = (document.getElementById('ddLogo') && document.getElementById('ddLogo').src) || 'https://logo.clearbit.com/dronedeploy.com';
+    const customerSrc = (document.getElementById('customerLogo') && document.getElementById('customerLogo').src) || '';
+    const rightHTML = customerSrc ? `
+        <div class="logo"><img alt="Customer" src="${customerSrc}"/></div>
+        <div style="font-size:12px;color:#6b7280">Prepared for <strong>${state.prepared_for||''}</strong></div>
+      ` : `
+        <div class="monogram">${monogram2(state.prepared_for||'')}</div>
+        <div style="font-size:12px;color:#6b7280">Prepared for <strong>${state.prepared_for||''}</strong></div>
+      `;
+    header.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="logo"><img alt="DroneDeploy" src="${ddSrc}"/></div>
+        <div style="font-weight:700;font-size:16px;color:var(--text)">DroneDeploy ROI Summary</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        ${rightHTML}
+      </div>
+    `;
+
+    // helper to escape HTML
+    const esc = (v) => String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+    // Prepared-by block (print-only)
+    const prepared = document.createElement('div');
+    prepared.className = 'card print-contact';
+    prepared.innerHTML = `
+      <div class="section-title"><h3>Prepared by</h3></div>
+      <div class="two-col">
+        <div><strong>Name</strong><div>${esc(state.prepared_by)}</div></div>
+        <div><strong>Title</strong><div>${esc(state.prepared_by_title)}</div></div>
+        <div><strong>Company</strong><div>${esc(state.prepared_by_company)}</div></div>
+        <div><strong>Email</strong><div>${esc(state.prepared_by_email)}</div></div>
+        <div><strong>Phone</strong><div>${esc(state.prepared_by_phone)}</div></div>
+      </div>
+    `;
+
+    // Body: summary + breakdown (conditional)
+    const rightCol = document.createElement('div');
+    rightCol.className = 'right column';
+    if (includeSummary && summary) rightCol.appendChild(summary.cloneNode(true));
+    if (includeBreakdown && breakdown) rightCol.appendChild(breakdown.cloneNode(true));
+
+    // Legal footer
+    const footer = document.createElement('div');
+    footer.className = 'print-legal';
+    footer.textContent = state.legal_footer || '';
+
+    wrapper.appendChild(header);
+    if (includePrepared) wrapper.appendChild(prepared);
+    wrapper.appendChild(rightCol);
+    if (includeFooter) wrapper.appendChild(footer);
+
+    // Compose CSS: reuse page styles, force white background in print
+    let css = `${document.querySelector('style')?.innerHTML || ''}`;
+    css += `
+body{background:#fff} .btn,.toolbar,.pills{display:none!important} .card{break-inside:avoid}`;
+    css += `
+.print-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}`;
+    css += `
+.print-legal{margin-top:16px;font-size:11px;color:#6b7280}`;
+
+    const auto = autoPrint ? "<script>window.onload=function(){try{window.focus();setTimeout(function(){window.print()},50)}catch(e){}}<\/script>" : "";
+    return `<!doctype html><html><head><meta charset="utf-8"><title>DroneDeploy ROI — Print</title><style>${css}</style><style>@page{size:letter;margin:12mm} .container{max-width:980px;padding:12px} .card{padding:12px;margin-bottom:8px} .section-title h3{font-size:14px} .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px} .kpi .value{font-size:20px} .kpi .sub{font-size:11px} .breakdown{font-size:13px} .breakdown li{padding:4px 0;border-bottom:1px dashed #edf2f7} .breakdown li:last-child{border-bottom:0} .breakdown li strong{font-size:20px;line-height:1.1} .print-header{margin-bottom:8px} .print-legal{margin-top:10px}</style></head><body>${wrapper.outerHTML}${auto}</body></html>`;
+  }
+
+  function openPrintable(autoPrint){
+    try{
+      const html = buildPrintableHTML(autoPrint);
+      const blob = new Blob([html], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const w = window.open(url, '_blank', 'noopener');
+      if (w) { return true; }
+      const a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener';
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 2000);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  if (btn) btn.addEventListener('click', ()=>{ if(!openPrintable(true)) alert('Please use Ctrl/Cmd+P to print.'); });
+  if (openBtn) openBtn.addEventListener('click', ()=>{ if(!openPrintable(false)) alert('Please use Ctrl/Cmd+P to print.'); });
+  const dlBtn = document.getElementById('downloadPrintBtn');
+  if (dlBtn) dlBtn.addEventListener('click', ()=>{
+    try{
+      const html = buildPrintableHTML(false);
+      const blob = new Blob([html], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const raw = (state.prepared_for||'Summary').toString().trim();
+      const name = raw.replace(/[ ]+/g,'_').replace(/[^A-Za-z0-9_-]/g,'');
+      a.href = url; a.download = `DroneDeploy_ROI_${name}.html`;
+      document.body.appendChild(a); a.click();
+      setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 1500);
+    }catch(e){ alert('Download blocked. Try Open print view and save that page.'); }
+  });
+})();
+  $('#copyLinkBtn').addEventListener('click', async ()=>{
+    const text = getShareUrl();
+    try{
+      if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); alert('Link copied'); }
+      else { $('#shareUrl').value = text; $('#shareUrl').focus(); $('#shareUrl').select(); document.execCommand('copy'); alert('Link copied'); }
+    }catch{ $('#shareUrl').value = text; $('#shareUrl').focus(); $('#shareUrl').select(); }
+  });
+  $('#applyPresetBtn').addEventListener('click', ()=>{
+    // Reset all fields to DroneDeploy defaults and refresh UI
+    Object.assign(state, DEFAULTS);
+    syncInputsFromState();
+    update();
+    try { console.log('DroneDeploy preset applied'); } catch {}
+  });
+
+  // ---- Init ----
+  function init(){
+    // Pre-fill inputs
+    initInputs();
+    applyBrand();
+    updateFooter();
+    updateMonogram();
+    update();
+  }
+
+  // ---- Tiny tests (console) ----
+  (function tests(){
+    console.assert(monogram2('Acme Construction')==='AC','monogram AC');
+    console.assert(pct0Capped(1.8)==='99%','capped ROI');
+  })();
+
+  init();
 })();
 </script>
 </body>
