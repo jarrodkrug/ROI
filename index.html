@@ -436,24 +436,28 @@
     updateShare();
   }
 
-$('#copyLinkBtn').addEventListener('click', async () => {
-  const text = getShareUrl();
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      alert('Share link copied to clipboard!');
-    } else {
-      $('#shareUrl').value = text;
-      $('#shareUrl').select();
-      document.execCommand('copy');
-      alert('Share link copied!');
-    }
-  } catch (err) {
-    console.error('Failed to copy to clipboard:', err);
-    $('#shareUrl').value = text;
-    $('#shareUrl').select();
+function getShareUrl() {
+  const p = new URLSearchParams();
+  Object.keys(DEFAULTS).forEach(k => {
+    p.set(k, String(state[k]));
+  });
+
+  let base;
+
+  // Handle GitHub Pages subpaths
+  // location.pathname might be "/my-repo-name/"
+  const path = location.pathname.split('/').slice(0, -1).join('/') || '';
+
+  if (location.protocol === 'file:') {
+    // Local file — keep as before
+    base = location.href.split('?')[0];
+  } else {
+    // Use host + correct subpath
+    base = location.origin + path + '/';
   }
-});
+
+  return base + '?' + p.toString();
+}
 
   // ---- Brand + footer ----
   function applyBrand(){
