@@ -71,7 +71,8 @@
     <header>
       <div class="brand">
         <div class="logo">
-          <img id="ddLogo" alt="DroneDeploy" src="https://drive.google.com/file/d/1wHK-DUoZDXn99nQiAjrpbO2Cyk-DUB7q/view?usp=sharing" />
+          <img id="ddLogo" alt="DroneDeploy" src="https://drive.google.com/uc?export=view&id=1wHK-DUoZDXn99nQiAjrpbO2Cyk-DUB7q
+" />
         </div>
         <div>
           <h1>DroneDeploy ROI Calculator</h1>
@@ -527,7 +528,7 @@ function getShareUrl() {
     // Small branded header
     const header = document.createElement('div');
     header.className = 'print-header';
-    const ddSrc = (document.getElementById('ddLogo') && document.getElementById('ddLogo').src) || 'https://drive.google.com/file/d/1wHK-DUoZDXn99nQiAjrpbO2Cyk-DUB7q/view?usp=sharing';
+    const ddSrc = (document.getElementById('ddLogo') && document.getElementById('ddLogo').src) || 'https://drive.google.com/uc?export=view&id=1wHK-DUoZDXn99nQiAjrpbO2Cyk-DUB7q';
     const customerSrc = (document.getElementById('customerLogo') && document.getElementById('customerLogo').src) || '';
     const rightHTML = customerSrc ? `
         <div class="logo"><img alt="Customer" src="${customerSrc}"/></div>
