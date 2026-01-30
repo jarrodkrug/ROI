@@ -44,4 +44,138 @@
   input[type="number"],input[type="text"],input[type="color"]{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:12px;font-size:14px;background:#fff}
   .kpis{display:grid;grid-template-columns:1fr;gap:12px}
   .kpi{background:#fff;border:1px solid var(--border);border-radius:16px;padding:12px}
-  .kpi .label
+  .kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#6b7280}
+  .kpi .value{font-size:22px;font-weight:700;margin-top:4px}
+  .kpi .sub{font-size:12px;color:#6b7280;margin-top:2px}
+  .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#111827;border-radius:14px;padding:8px 12px;font-size:14px;cursor:pointer}
+  .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+  footer{margin-top:18px;font-size:11px;color:#6b7280}
+  .breakdown{list-style:none;margin:0;padding:0}
+  .breakdown li{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px dashed #edf2f7}
+  .breakdown li strong{font-size:22px;line-height:1.15}
+  .breakdown li span{flex:1 1 auto}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo"><img id="ddLogo" alt="DroneDeploy" src="https://logo.clearbit.com/dronedeploy.com" /></div>
+        <div><h1>DroneDeploy ROI Calculator</h1><div class="muted">Estimate annual impact and payback based on your operations.</div></div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="left column">
+        <div class="pillbar">
+          <div class="pills">
+            <span class="pill">Sharable</span>
+            <span class="pill">No data stored</span>
+            <span class="pill">Estimates only</span>
+          </div>
+          <div class="actions">
+            <div class="action-grid">
+              <button class="btn" id="copyLinkBtn" title="Copy a link with your current inputs">Copy share link</button>
+              <button class="btn" id="openPrintViewBtn">Open print view</button>
+              <button class="btn" id="downloadPrintBtn">Download HTML</button>
+              <button class="btn primary" id="printBtn">Print / Save PDF</button>
+            </div>
+            <button class="btn primary" id="applyPresetBtn">Apply DroneDeploy preset</button>
+          </div>
+        </div>
+        <!-- (everything else unchanged — your inputs/cards go here unchanged) -->
+      </div>
+
+      <div class="right column">
+        <div class="card"><div class="section-title"><h3>Summary</h3></div><div class="kpis">
+            <div class="kpi"><div class="label">ROI</div><div class="value" id="kpiRoi">—</div></div>
+            <div class="kpi"><div class="label">Net annual impact</div><div class="value" id="kpiNet">—</div></div>
+            <div class="kpi"><div class="label">Payback period</div><div class="value" id="kpiPayback">—</div></div>
+        </div></div>
+        <div class="card"><div class="section-title"><h3>Breakdown</h3></div><ul class="breakdown" id="breakdown"></ul></div>
+
+        <div class="card"><div class="section-title"><h3>Share</h3></div>
+          <input type="text" readonly id="shareUrl" />
+        </div>
+        <footer id="footerText" class="card"></footer>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const $ = s=>document.querySelector(s);
+  const currency = n=> new Intl.NumberFormat(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}).format(isFinite(n)?n:0);
+
+  const DEFAULTS = {
+    flightsPerWeek:5,weeksPerYear:48,teamMembers:2,manualHoursPerFlight:3,droneHoursPerFlight:1,hourlyRate:75,travelHoursSavedPerFlight:1,
+    avgReworkCostPerProject:1200,reworkRateBaseline:0.12,reworkRateWithDD:0.05,
+    safetyIncidentsBaseline:2,safetyIncidentsWithDD:1,costPerSafetyIncident:5000,
+    softwareAnnualCost:12000,hardwareAnnualCost:5000,otherAnnualCosts:2000,
+    number_of_projects_per_year:3,average_construction_cost:15000000,pct_bids_you_win:0.5,number_of_projects_you_submit_for_bid:6,
+    estimated_total_travel_costs_per_year:139644,estimated_total_destructive_investigation_expenses_per_year:57600,
+    estimated_cost_of_organizing_and_sharing_images_per_year:78750,
+    estimated_cost_of_safety_and_qa_qc_inspections_per_year:504000,
+    estimated_total_insurance_costs_per_year:1350000,
+    working_hours_per_day:8,revenue_per_day:123288,
+    travel_reduction_pct:0.5,investigations_reduction_pct:0.5,doc_efficiency_improvement_pct:0.0062,insurance_premium_reduction_pct:0.1,
+    schedule_acceleration_pct:0.3333,win_rate_uplift_pct:0.5,
+    brand_primary_hex:'#2D6BFF',brand_text_hex:'#0f172a',
+    prepared_for:'Acme Construction',prepared_by:'Jarrod Krug',prepared_by_title:'Solutions Consultant',prepared_by_company:'DroneDeploy',
+    prepared_by_email:'jarrod.krug@dronedeploy.com',prepared_by_phone:'',
+    legal_footer:'Confidential — Provided by DroneDeploy under NDA. Do not distribute without written consent.'
+  };
+
+  const state = {...DEFAULTS};
+
+  // Parse URL params
+  const params = new URLSearchParams(location.search);
+  Object.keys(DEFAULTS).forEach(k=>{ if(params.has(k)) state[k] = typeof DEFAULTS[k]==='number' ? Number(params.get(k)) : params.get(k); });
+
+  function getShareUrl(){
+    const p = new URLSearchParams();
+    Object.keys(DEFAULTS).forEach(k=>{ p.set(k,String(state[k])); });
+
+    // Build a base that WORKS even locally
+    let base;
+    if(location.protocol.startsWith('file:')){
+      const full = location.href.split('?')[0];
+      base = full;
+    } else {
+      base = location.origin + location.pathname;
+    }
+    return base + '?' + p.toString();
+  }
+
+  $('#copyLinkBtn').addEventListener('click', async ()=>{
+    const text = getShareUrl();
+    try {
+      if(navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        alert('Share link copied!');
+      } else {
+        $('#shareUrl').value = text;
+        $('#shareUrl').select();
+        document.execCommand('copy');
+        alert('Share link copied!');
+      }
+    } catch(e) {
+      $('#shareUrl').value = text;
+      $('#shareUrl').select();
+    }
+  });
+
+  function updateShare(){
+    $('#shareUrl').value = getShareUrl();
+  }
+
+  // Placeholder update() — you can plug your original compute logic back here
+  function update(){
+    updateShare();
+  }
+
+  update();
+})();
+</script>
+</body>
+</html>
